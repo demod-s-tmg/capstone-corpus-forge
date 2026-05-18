@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Corpus Forge</title>
+</head>
+
+<body>
+    <h1>Corpus Forge - Ingestion & Management</h1>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul style="color: red; font-weight: bold;">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+    <h2>Upload a Document</h2>
+    <form action="{{ url_for('ingestion.upload_file') }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="document">
+        <input type="submit" value="Upload">
+    </form>
+
+    <h2>Current Corpus</h2>
+    {% if files %}
+    <form action="{{ url_for('ingestion.update_active_corpus') }}" method="post">
+        <ul style="list-style: none; padding-left: 0;">
+            {% for file in files %}
+            <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <label style="display: inline-flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="active_files" value="{{ file }}"
+                        {% if file in active_corpus %}checked{% endif %}>
+                    <span>{{ file }}</span>
+                </label>
+                <button type="submit" formaction="{{ url_for('ingestion.delete_file', filename=file) }}" formmethod="post"
+                    onclick="return confirm('Are you sure you want to delete {{ file }}?');">
+                    Delete
+                </button>
+            </li>
+            {% endfor %}
+        </ul>
+        <button type="submit">Save Active Corpus</button>
+    </form>
+    {% else %}
+    <p>No documents uploaded yet.</p>
+    {% endif %}
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Corpus Forge Chat</title>
+</head>
+
+<body>
+    <h1>Chat Workspace</h1>
+    <p>This blueprint is the place to add ChromaDB retrieval and generative AI workflows.</p>
+
+    <h2>Active Corpus</h2>
+    {% if active_corpus %}
+    <ul>
+        {% for file in active_corpus %}
+        <li>{{ file }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No active documents selected yet.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('ingestion.index') }}">Back to ingestion</a></p>
+</body>
+
+</html>

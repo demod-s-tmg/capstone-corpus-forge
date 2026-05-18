@@ -1,0 +1,1 @@
+"""Flask blueprint package for Corpus Forge routes."""

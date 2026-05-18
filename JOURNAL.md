@@ -89,3 +89,7 @@
 - **Date**: 18-05-2026 14:36
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: Can u add the plans we discussed in the docs folder properly?
+- **CoPilot Mode**: Agent
+- **CoPilot Model**: GPT-5.4 mini
+- **Changes Made**: Created docs/roadmap.md to record the current blueprint-based Flask structure and the planned ChromaDB and generative AI implementation path.
+- **Context and Reasons for Changes**: The docs folder was empty, so a single roadmap file gives the team a central place to track the app structure and future work without scattering notes.
