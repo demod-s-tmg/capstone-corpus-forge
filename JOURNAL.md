@@ -166,3 +166,9 @@
 - **Date**: 18-05-2026 15:53
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: I am getting this issue "Error: google.generativeai SDK does not expose a compatible generation method."
+
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 18-05-2026 15:55
+- **User**: redowan-ahmed.sameer@epita.fr
+- **Prompt**: "Error: Gemini generation failed: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods."  How to solve it?
