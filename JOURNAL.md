@@ -112,14 +112,9 @@
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: Check my templates/chat.html. It should receive a list of active_corpus files from the backend. It needs dropdown menus for prompt steering (audience level, tone, task instructions) , a text input box for the user's question, and a chat log area that displays the conversation. Use plain JavaScript fetch() to send the form data to /chat/query asynchronously so the page doesn't refresh when the user asks a question
 
-### **New Interaction**
-- **Agent Version**: 2.3
-- **Date**: 18-05-2026 15:19
-- **User**: redowan-ahmed.sameer@epita.fr
-- **Prompt**: checj why my chat feature not working
 
 ### **New Interaction**
 - **Agent Version**: 2.3
-- **Date**: 18-05-2026 15:20
+- **Date**: 18-05-2026 15:29
 - **User**: redowan-ahmed.sameer@epita.fr
-- **Prompt**: check why my chat feature not working and check if all features working, if not fix all
+- **Prompt**: I want to implement the Generative AI workflow inside routes/chat.py using the official google-generativeai SDK. Do NOT hardcode any API keys. Write a POST route /query that safely loads the API key from an environment variable using os.environ.get('GEMINI_API_KEY')
