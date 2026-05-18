@@ -105,3 +105,9 @@
 - **Date**: 18-05-2026 14:52
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: Review my current chat route inside routes/chat.py. Without modifying that existing route, add a new POST route named /query to this blueprint. This route should accept a user question, along with prompt steering form parameters for tone, audience, and task . It should instantiate the VectorStoreManager from vector_store.py, retrieve context chunks for the files listed in session['active_corpus'], build a grounded prompt, and use the official google-generativeai SDK to return the AI's response
+
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 18-05-2026 14:55
+- **User**: redowan-ahmed.sameer@epita.fr
+- **Prompt**: Check my templates/chat.html. It should receive a list of active_corpus files from the backend. It needs dropdown menus for prompt steering (audience level, tone, task instructions) , a text input box for the user's question, and a chat log area that displays the conversation. Use plain JavaScript fetch() to send the form data to /chat/query asynchronously so the page doesn't refresh when the user asks a question
