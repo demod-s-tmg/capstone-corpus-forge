@@ -73,3 +73,6 @@
 ### 18-05-2026 15:58
 - **Prompt**: Explain the conceptual difference between a traditional SQL LIKE %query% keyword search and a vector embedding semantic search inside ChromaDB. After explaining, give me an isolated Python function debug_vector_distance(query_text, document_text) that calculates and prints the cosine similarity score between a user query and a chunk so I can see how ChromaDB ranks them under the hood
 
+### 18-05-2026 16:07
+- **Prompt**: Explain step-by-step how a RAG system tracks text chunks back to their source files so the user knows exactly where an answer came from. Once explained, modify only the internal logic of the /chat/query route to return a JSON payload that includes an array of source filenames and chunk IDs ({"response": ai_output, "sources": ["file1.pdf", "file2.py"]}) without altering the core HTML template structure.
+
