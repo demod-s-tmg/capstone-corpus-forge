@@ -99,3 +99,9 @@
 - **Date**: 18-05-2026 14:49
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: I have a working Flask app with an ingestion blueprint. I want to create a completely separate file named vector_store.py to handle ChromaDB storage. Write a class VectorStoreManager that initializes a persistent client in a local directory chroma_db. It should have a function add_document(filename, text) that splits text into chunks of 1000 characters with a 200-character overlap and adds them to a collection with the filename as metadata. It also needs a function query_context(active_files, query_text) that queries the collection but uses metadata filtering to only return results matching files in the active_files list .
+
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 18-05-2026 14:52
+- **User**: redowan-ahmed.sameer@epita.fr
+- **Prompt**: Review my current chat route inside routes/chat.py. Without modifying that existing route, add a new POST route named /query to this blueprint. This route should accept a user question, along with prompt steering form parameters for tone, audience, and task . It should instantiate the VectorStoreManager from vector_store.py, retrieve context chunks for the files listed in session['active_corpus'], build a grounded prompt, and use the official google-generativeai SDK to return the AI's response
