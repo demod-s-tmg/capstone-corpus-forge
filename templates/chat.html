@@ -367,6 +367,11 @@
                         </select>
                     </div>
                 </div>
+                {% if not openai_available %}
+                <div class="no-documents-warning" style="margin-top:12px; background: #ffe6e6; color: #8a1f1f; border-left-color: #f44336;">
+                    <strong>OpenAI not configured.</strong> Set the environment variable <em>OPENAI_API_KEY</em> before starting the app to enable AI responses.
+                </div>
+                {% endif %}
             </div>
 
             <!-- Chat Log -->

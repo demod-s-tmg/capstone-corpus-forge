@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import os
 
-import pdfplumber
+try:
+    import pdfplumber
+except Exception:
+    pdfplumber = None
 
 
 def extract_text_from_txt(file_path: str) -> str:
@@ -25,6 +28,10 @@ def extract_text_from_js(file_path: str) -> str:
 
 
 def extract_text_from_pdf(file_path: str) -> str:
+    if pdfplumber is None:
+        # pdfplumber not available, return empty string to allow app to continue
+        return ""
+
     extracted_pages = []
 
     with pdfplumber.open(file_path) as pdf_file:
