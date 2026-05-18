@@ -67,3 +67,6 @@
 ### 18-05-2026 15:55
 - **Prompt**: "Error: Gemini generation failed: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods."  How to solve it?
 
+### 18-05-2026 15:57
+- **Prompt**: Explain to me step-by-step how the context window constraint of gemini-1.5-flash vs 2.5 flash impacts a RAG system when reading multiple large documents. Once I understand the token math, write a standalone utility function count_tokens(text: str) -> int using a standard Python token estimation strategy that I can add to utils.py without changing my existing validation logic
+
