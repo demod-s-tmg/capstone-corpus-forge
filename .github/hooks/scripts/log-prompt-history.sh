@@ -19,7 +19,7 @@ from datetime import datetime
 from pathlib import Path
 
 # Internal version (increment on each edit): X.YZ
-VERSION = "1.02"
+VERSION = "2.3"
 
 # Toggle local transcript copy (original filename is preserved).
 ENABLE_LOCAL_TRANSCRIPT_COPY = False
@@ -168,9 +168,9 @@ def main() -> int:
 
     journal_entry = (
       "\n### **New Interaction**\n"
-      f"- **Hook Version**: {VERSION}\n"
+      f"- **Agent Version**: {VERSION}\n"
       f"- **Date**: {timestamp_journal}\n"
-      # f"- **User**: {user_identity}\n"
+      f"- **User**: {user_identity}\n"
       f"- **Prompt**: {prompt}\n"
     )
 
