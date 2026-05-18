@@ -9,6 +9,10 @@ from werkzeug.utils import secure_filename
 
 from utils import allowed_file, validate_file_content
 from extractor import extract_text_from_file
+from vector_store import VectorStoreManager
+
+# Initialize the store manager helper
+v_store = VectorStoreManager()
 
 
 ingestion_bp = Blueprint("ingestion", __name__)
@@ -80,6 +84,8 @@ def upload_file():
     file.save(file_path)
 
     extracted_text = extract_text_from_file(file_path)
+    # Automatically index the text chunk embeddings into our vector space
+    v_store.add_document(filename, extracted_text)
     flash(
         f"File {filename} successfully uploaded and extracted ({len(extracted_text)} characters)."
     )
@@ -102,6 +108,8 @@ def delete_file(filename):
 
     if os.path.exists(file_path) and os.path.isfile(file_path):
         os.remove(file_path)
+        # Remove from vector store as well
+        v_store.delete_document(secure_name)
         active_corpus = session.get("active_corpus", [])
         if secure_name in active_corpus:
             session["active_corpus"] = [file for file in active_corpus if file != secure_name]
