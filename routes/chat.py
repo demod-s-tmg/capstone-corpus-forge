@@ -120,10 +120,10 @@ def chat():
 
 @chat_bp.route("/query", methods=["POST"])
 def query():
-    """Handle JSON-based user queries using Gemini (gemini-1.5-flash).
+    """Handle JSON-based user queries using Gemini.
 
     Expects JSON body with keys: 'question', 'tone', 'audience', 'task'.
-    Returns JSON: {"response": ai_output}
+    Returns JSON with model response plus source trace metadata.
     """
     data = request.get_json(silent=True) or {}
     user_question = (data.get("question") or "").strip()
@@ -140,8 +140,66 @@ def query():
     if not active_corpus:
         return jsonify({"error": "No documents selected. Please select files to query."}), 400
 
-    # Query the top 5 context chunks strictly within the active corpus
-    context_chunks = vs.query_context(active_files=active_corpus, query_text=user_question, n_results=5)
+    # Query the top 5 context chunks strictly within the active corpus and capture IDs for traceability
+    context_chunks = []
+    if vs.collection is not None:
+        if len(active_corpus) == 1:
+            where_filter = {"filename": active_corpus[0]}
+        else:
+            where_filter = {"filename": {"$in": active_corpus}}
+
+        try:
+            raw_results = vs.collection.query(
+                query_texts=[user_question],
+                n_results=5,
+                where=where_filter,
+                include=["documents", "metadatas", "distances"],
+            )
+
+            documents = (raw_results.get("documents") or [[]])[0]
+            metadatas = (raw_results.get("metadatas") or [[]])[0]
+            distances = (raw_results.get("distances") or [[]])[0]
+            ids = (raw_results.get("ids") or [[]])[0]
+
+            for idx, doc in enumerate(documents):
+                metadata = metadatas[idx] if idx < len(metadatas) else {}
+                context_chunks.append(
+                    {
+                        "document": doc,
+                        "filename": (metadata or {}).get("filename"),
+                        "distance": distances[idx] if idx < len(distances) else None,
+                        "chunk_id": ids[idx] if idx < len(ids) else None,
+                    }
+                )
+        except Exception:
+            context_chunks = vs.query_context(
+                active_files=active_corpus,
+                query_text=user_question,
+                n_results=5,
+            )
+    else:
+        context_chunks = vs.query_context(
+            active_files=active_corpus,
+            query_text=user_question,
+            n_results=5,
+        )
+
+    # Build source metadata for UI/client-side explainability.
+    source_filenames = []
+    source_chunk_ids = []
+    source_chunks = []
+    for chunk in context_chunks:
+        filename = chunk.get("filename")
+        chunk_id = chunk.get("chunk_id")
+
+        if filename and filename not in source_filenames:
+            source_filenames.append(filename)
+
+        if chunk_id and chunk_id not in source_chunk_ids:
+            source_chunk_ids.append(chunk_id)
+
+        if filename or chunk_id:
+            source_chunks.append({"filename": filename, "chunk_id": chunk_id})
 
     if not context_chunks:
         context_text = "(No relevant context found in the selected documents.)"
@@ -217,4 +275,11 @@ def query():
     if not ai_output:
         ai_output = "No response generated."
 
-    return jsonify({"response": ai_output})
+    return jsonify(
+        {
+            "response": ai_output,
+            "sources": source_filenames,
+            "source_chunk_ids": source_chunk_ids,
+            "source_chunks": source_chunks,
+        }
+    )
