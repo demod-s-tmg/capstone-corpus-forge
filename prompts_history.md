@@ -70,3 +70,6 @@
 ### 18-05-2026 15:57
 - **Prompt**: Explain to me step-by-step how the context window constraint of gemini-1.5-flash vs 2.5 flash impacts a RAG system when reading multiple large documents. Once I understand the token math, write a standalone utility function count_tokens(text: str) -> int using a standard Python token estimation strategy that I can add to utils.py without changing my existing validation logic
 
+### 18-05-2026 15:58
+- **Prompt**: Explain the conceptual difference between a traditional SQL LIKE %query% keyword search and a vector embedding semantic search inside ChromaDB. After explaining, give me an isolated Python function debug_vector_distance(query_text, document_text) that calculates and prints the cosine similarity score between a user query and a chunk so I can see how ChromaDB ranks them under the hood
+
