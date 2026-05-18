@@ -19,3 +19,6 @@
 ### 18-05-2026 14:28
 - **Prompt**: Users also need to select which specific documents are active for their AI chat session. Suggest a UI approach (like checkboxes or a toggle switch in the HTML form) and the corresponding Flask backend logic to keep track of the user's 'active corpus' in their session state
 
+### 18-05-2026 14:29
+- **Prompt**: This application is about to grow. We need to add a vector database (ChromaDB) and Generative AI workflows. To keep the code clean and prevent merge conflicts within my team, how can I use Flask Blueprints to split my app.py into separate routing files (e.g., routes/ingestion.py, routes/chat.py)?
+

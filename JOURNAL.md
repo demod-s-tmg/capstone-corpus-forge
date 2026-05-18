@@ -60,6 +60,22 @@
 
 ### **New Interaction**
 - **Agent Version**: 2.3
+- **Date**: 18-05-2026 14:31
+- **User**: redowan-ahmed.sameer@epita.fr
+- **Prompt**: Users also need to select which specific documents are active for their AI chat session. Suggest a UI approach (like checkboxes or a toggle switch in the HTML form) and the corresponding Flask backend logic to keep track of the user's 'active corpus' in their session state
+- **CoPilot Mode**: Agent
+- **CoPilot Model**: GPT-5.4 mini
+- **Changes Made**: Added a session-backed active corpus flow using checkbox selection in the corpus list, introduced a POST endpoint to store selected filenames in Flask session state, and kept the session active list synchronized when files are deleted.
+- **Context and Reasons for Changes**: The chat session needs a user-specific subset of the corpus, so the UI now lets users mark active documents and the backend persists that choice per session.
+
+### **New Interaction**
+- **Agent Version**: 2.3
 - **Date**: 18-05-2026 14:28
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: Users also need to select which specific documents are active for their AI chat session. Suggest a UI approach (like checkboxes or a toggle switch in the HTML form) and the corresponding Flask backend logic to keep track of the user's 'active corpus' in their session state
+
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 18-05-2026 14:29
+- **User**: redowan-ahmed.sameer@epita.fr
+- **Prompt**: This application is about to grow. We need to add a vector database (ChromaDB) and Generative AI workflows. To keep the code clean and prevent merge conflicts within my team, how can I use Flask Blueprints to split my app.py into separate routing files (e.g., routes/ingestion.py, routes/chat.py)?
