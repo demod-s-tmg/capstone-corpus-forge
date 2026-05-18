@@ -141,7 +141,7 @@
 - **Agent Version**: 2.3
 - **Date**: 18-05-2026 15:38
 - **User**: redowan-ahmed.sameer@epita.fr
-- **Prompt**: can u add thus api key to run always for this project?AIzaSyCA0balJjH48KU59uHgcyJIyhTcn_oVucs  This is a gemini api key i am using for this project.
+- **Prompt**: can u add thus api key to run always for this project?xxxx  This is a gemini api key i am using for this project.
 
 ### **New Interaction**
 - **Agent Version**: 2.3

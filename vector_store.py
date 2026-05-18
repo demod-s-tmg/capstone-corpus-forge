@@ -5,6 +5,7 @@ os.environ["ANONYMIZED_TELEMETRY"] = "False"
 
 try:
     import chromadb
+    from chromadb.config import Settings
     from chromadb.utils import embedding_functions
 except (ImportError, TypeError) as e:
     # Python 3.14+ has protobuf incompatibility with ChromaDB
@@ -13,6 +14,7 @@ except (ImportError, TypeError) as e:
     print("ChromaDB vector storage will not be available.")
     print("Please use Python 3.11 or 3.12 for full functionality.")
     chromadb = None
+    Settings = None
     embedding_functions = None
 
 
@@ -33,7 +35,9 @@ class VectorStoreManager:
         os.makedirs(db_path, exist_ok=True)
 
         # Initialize persistent client on your local machine
-        self.client = chromadb.PersistentClient(path=db_path)
+        # Explicitly disable anonymized telemetry to avoid posthog API mismatch noise.
+        client_settings = Settings(anonymized_telemetry=False) if Settings else None
+        self.client = chromadb.PersistentClient(path=db_path, settings=client_settings)
 
         # Use ChromeDB's default embedding function (all-MiniLM-L6-v2)
         self.embedding_function = embedding_functions.DefaultEmbeddingFunction()

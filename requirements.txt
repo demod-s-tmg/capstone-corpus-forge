@@ -67,7 +67,7 @@ packaging==26.2
 pdfminer.six==20250506
 pdfplumber==0.11.7
 pillow==12.2.0
-posthog==7.14.2
+posthog==3.5.0
 proto-plus==1.27.1
 protobuf==5.29.6
 pyasn1==0.6.3

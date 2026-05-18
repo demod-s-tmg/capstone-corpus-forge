@@ -50,7 +50,7 @@
 - **Prompt**: Create a highly polished, professional, and visually appealing user interface for templates/chat.html using clean, embedded CSS styling.  The layout should feature a split screen or sidebar workspace view:  A clear sidebar showing the currently active files from the corpus session.  An elegant configuration panel with dropdown menus for prompt steering (Audience Level, Tone, Task Assignment).  A large, clean, modern chat log bubble display that formats markdown cleanly.  Include an interactive text input area and use vanilla JavaScript fetch() to send query payloads asynchronously to /chat/query so the conversation updates instantly without full page refreshes.
 
 ### 18-05-2026 15:38
-- **Prompt**: can u add thus api key to run always for this project?AIzaSyCA0balJjH48KU59uHgcyJIyhTcn_oVucs  This is a gemini api key i am using for this project.
+- **Prompt**: can u add thus api key to run always for this project?xxxx  This is a gemini api key i am using for this project.
 
 ### 18-05-2026 15:40
 - **Prompt**: I just loaded the templates/chat.html file you generated in my browser, and the interface is completely broken because the raw JavaScript source code is rendering as visible text directly across the middle of the viewport.  Before you give me the corrected code, explain to me exactly why the browser interpreted my client-side logic as plain document text instead of executing it.  Once you've explained the cause, provide the clean, complete templates/chat.html file ensuring all asynchronous fetch() functions are safely wrapped so they run correctly when I send a prompt payload to /chat/query
