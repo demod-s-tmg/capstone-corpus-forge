@@ -37,3 +37,6 @@
 ### 18-05-2026 15:19
 - **Prompt**: checj why my chat feature not working
 
+### 18-05-2026 15:20
+- **Prompt**: check why my chat feature not working and check if all features working, if not fix all
+
