@@ -142,3 +142,9 @@
 - **Date**: 18-05-2026 15:38
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: can u add thus api key to run always for this project?AIzaSyCA0balJjH48KU59uHgcyJIyhTcn_oVucs  This is a gemini api key i am using for this project.
+
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 18-05-2026 15:40
+- **User**: redowan-ahmed.sameer@epita.fr
+- **Prompt**: I just loaded the templates/chat.html file you generated in my browser, and the interface is completely broken because the raw JavaScript source code is rendering as visible text directly across the middle of the viewport.  Before you give me the corrected code, explain to me exactly why the browser interpreted my client-side logic as plain document text instead of executing it.  Once you've explained the cause, provide the clean, complete templates/chat.html file ensuring all asynchronous fetch() functions are safely wrapped so they run correctly when I send a prompt payload to /chat/query
