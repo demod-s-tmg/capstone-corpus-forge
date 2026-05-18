@@ -12,6 +12,19 @@ ALLOWED_MIMES = {
 }
 
 
+def count_tokens(text: str) -> int:
+    """Estimate token count using a standard character-length heuristic.
+
+    This uses ~4 characters per token, a common rough estimate for English text.
+    It is fast and model-agnostic, intended for pre-checks in RAG pipelines.
+    """
+    if not text:
+        return 0
+
+    # Round up so partial token-sized fragments count toward the estimate.
+    return (len(text) + 3) // 4
+
+
 def allowed_file(filename: str) -> bool:
     """Check if filename has allowed extension."""
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS

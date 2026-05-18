@@ -1,5 +1,12 @@
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
 from flask import Flask
+
+# Load project-local environment variables before importing modules that read them.
+load_dotenv(dotenv_path=Path(__file__).resolve().parent / ".env")
+
 from routes.ingestion import ingestion_bp
 from routes.chat import chat_bp  # 1. Import the chat blueprint
 

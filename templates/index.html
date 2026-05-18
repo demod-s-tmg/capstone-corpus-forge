@@ -1,59 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Corpus Forge</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Corpus Forge | Corpus Management</title>
+    <style>
+        :root {
+            --bg: #0a1322;
+            --panel: #111b2e;
+            --line: #2a3a57;
+            --text: #e8efff;
+            --muted: #a4b3d3;
+            --action: #1d9bf0;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, #07101d 0%, #0a1322 100%);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .shell {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            gap: 16px;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--panel);
+            padding: 14px;
+        }
+
+        .nav h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .nav a {
+            color: var(--text);
+            text-decoration: none;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-left: 8px;
+        }
+
+        .nav a:hover { border-color: var(--action); }
+
+        .panel {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--panel);
+            padding: 16px;
+        }
+
+        .panel h2 {
+            margin: 0 0 10px;
+            font-size: 16px;
+        }
+
+        .flash {
+            margin: 0;
+            padding-left: 18px;
+            color: #fecaca;
+        }
+
+        input[type="file"],
+        button {
+            font: inherit;
+            border-radius: 8px;
+        }
+
+        input[type="file"] {
+            background: #0d172a;
+            color: var(--text);
+            border: 1px solid var(--line);
+            padding: 8px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        button {
+            border: none;
+            padding: 8px 12px;
+            background: var(--action);
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .danger {
+            background: var(--danger);
+        }
+
+        .file-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 8px;
+        }
+
+        .file-item {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .empty {
+            color: var(--muted);
+            margin: 0;
+        }
+    </style>
 </head>
-
 <body>
-    <h1>Corpus Forge - Ingestion & Management</h1>
-    <h1>Corpus Forge - Ingestion & Management</h1>
+    <div class="shell">
+        <header class="nav">
+            <h1>Corpus Forge Management</h1>
+            <nav>
+                <a href="{{ url_for('ingestion.index') }}">Manage Corpus</a>
+                <a href="{{ url_for('chat.chat') }}">AI Workspace Chat</a>
+            </nav>
+        </header>
 
-    <nav style="margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border-radius: 4px;">
-        <a href="{{ url_for('ingestion.index') }}" style="margin-right: 15px; font-weight: bold; text-decoration: none; color: #333;">📁 Manage Corpus</a>
-        <a href="{{ url_for('chat.chat') }}" style="font-weight: bold; text-decoration: none; color: #007bff;">💬 Go to AI Workspace Chat</a>
-    </nav>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <section class="panel" aria-live="polite">
+            <h2>Notifications</h2>
+            <ul class="flash">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+        {% endwith %}
 
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul style="color: red; font-weight: bold;">
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
+        <section class="panel">
+            <h2>Upload Document</h2>
+            <form action="{{ url_for('ingestion.upload_file') }}" method="post" enctype="multipart/form-data">
+                <input type="file" name="document" required />
+                <button type="submit">Upload</button>
+            </form>
+        </section>
 
-    <h2>Upload a Document</h2>
-    <form action="{{ url_for('ingestion.upload_file') }}" method="post" enctype="multipart/form-data">
-        <input type="file" name="document">
-        <input type="submit" value="Upload">
-    </form>
-
-    <h2>Current Corpus</h2>
-    {% if files %}
-    <form action="{{ url_for('ingestion.update_active_corpus') }}" method="post">
-        <ul style="list-style: none; padding-left: 0;">
-            {% for file in files %}
-            <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                <label style="display: inline-flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" name="active_files" value="{{ file }}"
-                        {% if file in active_corpus %}checked{% endif %}>
-                    <span>{{ file }}</span>
-                </label>
-                <button type="submit" formaction="{{ url_for('ingestion.delete_file', filename=file) }}" formmethod="post"
-                    onclick="return confirm('Are you sure you want to delete {{ file }}?');">
-                    Delete
-                </button>
-            </li>
-            {% endfor %}
-        </ul>
-        <button type="submit">Save Active Corpus</button>
-    </form>
-    {% else %}
-    <p>No documents uploaded yet.</p>
-    {% endif %}
+        <section class="panel">
+            <h2>Current Corpus</h2>
+            {% if files %}
+            <form action="{{ url_for('ingestion.update_active_corpus') }}" method="post">
+                <ul class="file-list">
+                    {% for file in files %}
+                    <li class="file-item">
+                        <label>
+                            <input
+                                type="checkbox"
+                                name="active_files"
+                                value="{{ file }}"
+                                {% if file in active_corpus %}checked{% endif %}
+                            />
+                            {{ file }}
+                        </label>
+                        <button
+                            class="danger"
+                            type="submit"
+                            formaction="{{ url_for('ingestion.delete_file', filename=file) }}"
+                            formmethod="post"
+                            onclick="return confirm('Are you sure you want to delete {{ file }}?');"
+                        >
+                            Delete
+                        </button>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <p style="margin-top: 12px;">
+                    <button type="submit">Save Active Corpus</button>
+                </p>
+            </form>
+            {% else %}
+            <p class="empty">No documents uploaded yet.</p>
+            {% endif %}
+        </section>
+    </div>
 </body>
-
 </html>

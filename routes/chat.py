@@ -1,6 +1,14 @@
 """Blueprint reserved for chat and future GenAI workflows."""
 
+import importlib
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+# Load project-local environment variables for direct module imports as well.
+load_dotenv(dotenv_path=Path(__file__).resolve().parents[1] / ".env")
+
 try:
     from openai import OpenAI
     from openai.error import APIError
@@ -47,11 +55,61 @@ if GEMINI_API_KEY and genai is not None:
         genai_client = None
 
 
+def _get_gemini_module():
+    """Load Gemini SDK lazily so runtime env/interpreter changes are reflected."""
+    global genai
+    if genai is not None:
+        return genai
+    try:
+        genai = importlib.import_module("google.generativeai")
+    except Exception:
+        return None
+    return genai
+
+
+def _normalize_model_name(model_name: str) -> str:
+    if model_name.startswith("models/"):
+        return model_name.split("/", 1)[1]
+    return model_name
+
+
+def _resolve_gemini_model(gemini_mod):
+    """Choose an available generateContent-capable model for the current API key."""
+    preferred_models = [
+        "gemini-2.5-flash",
+        "gemini-2.0-flash",
+        "gemini-flash-latest",
+        "gemini-2.0-flash-lite",
+        "gemini-pro-latest",
+    ]
+
+    available_models = []
+    if hasattr(gemini_mod, "list_models"):
+        try:
+            for model in gemini_mod.list_models():
+                methods = getattr(model, "supported_generation_methods", []) or []
+                if any(method.lower() == "generatecontent" for method in methods):
+                    available_models.append(_normalize_model_name(getattr(model, "name", "")))
+        except Exception:
+            available_models = []
+
+    available_models = [m for m in available_models if m]
+
+    for preferred in preferred_models:
+        if preferred in available_models:
+            return preferred, available_models
+
+    if available_models:
+        return available_models[0], available_models
+
+    return "gemini-2.0-flash", available_models
+
+
 @chat_bp.route("/")
 def chat():
     active_corpus = session.get("active_corpus", [])
-    openai_available = bool(OPENAI_API_KEY and client)
-    gemini_available = bool(GEMINI_API_KEY and genai_client)
+    openai_available = bool(os.getenv("OPENAI_API_KEY") and OpenAI is not None)
+    gemini_available = bool(os.getenv("GEMINI_API_KEY") and _get_gemini_module() is not None)
     return render_template(
         "chat.html",
         active_corpus=active_corpus,
@@ -62,130 +120,101 @@ def chat():
 
 @chat_bp.route("/query", methods=["POST"])
 def query():
-    """Handle user queries with grounded context from the active corpus."""
-    # Get form parameters
-    user_question = request.form.get("question", "").strip()
-    tone = request.form.get("tone", "professional").strip()
-    audience = request.form.get("audience", "general").strip()
-    task = request.form.get("task", "explain").strip()
+    """Handle JSON-based user queries using Gemini (gemini-1.5-flash).
 
-    # Validate input
+    Expects JSON body with keys: 'question', 'tone', 'audience', 'task'.
+    Returns JSON: {"response": ai_output}
+    """
+    data = request.get_json(silent=True) or {}
+    user_question = (data.get("question") or "").strip()
+    tone = (data.get("tone") or "professional").strip()
+    audience = (data.get("audience") or "general").strip()
+    task = (data.get("task") or "explain").strip()
+
     if not user_question:
         return jsonify({"error": "Question cannot be empty."}), 400
 
-    # Require at least one configured model (Gemini or OpenAI)
-    if not ((GEMINI_API_KEY and genai_client) or (OPENAI_API_KEY and client)):
-        return (
-            jsonify({"error": "No generative AI API key configured (GEMINI_API_KEY or OPENAI_API_KEY)."}),
-            500,
-        )
-
-    # Get active corpus from session
+    # Initialize a fresh VectorStoreManager and get active corpus
+    vs = VectorStoreManager()
     active_corpus = session.get("active_corpus", [])
     if not active_corpus:
         return jsonify({"error": "No documents selected. Please select files to query."}), 400
 
-    # Retrieve context chunks from the vector store
-    context_chunks = v_store.query_context(
-        active_files=active_corpus, query_text=user_question, n_results=5
-    )
+    # Query the top 5 context chunks strictly within the active corpus
+    context_chunks = vs.query_context(active_files=active_corpus, query_text=user_question, n_results=5)
 
     if not context_chunks:
         context_text = "(No relevant context found in the selected documents.)"
     else:
-        context_text = "\n\n".join(
-            [f"[{chunk['filename']}]\n{chunk['document']}" for chunk in context_chunks]
-        )
+        context_text = "\n\n".join([f"[{c['filename']}]\n{c['document']}" for c in context_chunks])
 
-    # Build the grounded prompt
-    system_prompt = f"""You are a helpful assistant with access to document context.
-- Tone: {tone}
-- Audience: {audience}
-- Task: {task}
-
-Provide clear, accurate answers based on the provided context. If the context doesn't contain the answer, acknowledge that and offer what you can."""
-
-    user_prompt = f"""Context from documents:
-{context_text}
-
-User question: {user_question}
-
-Please answer the question based on the context above."""
-
-    # Prefer Gemini (Google Generative AI) if available
-    full_prompt = f"{system_prompt}\n\n{user_prompt}"
+    # Configure the official google.generativeai SDK from environment
+    gemini_key = os.environ.get("GEMINI_API_KEY")
+    gemini_mod = _get_gemini_module()
+    if not gemini_key or gemini_mod is None:
+        return jsonify({"error": "GEMINI_API_KEY not set or google.generativeai not installed."}), 500
 
     try:
-        ai_response_text = None
+        # Configure SDK (some versions use genai.configure)
+        if hasattr(gemini_mod, "configure"):
+            gemini_mod.configure(api_key=gemini_key)
+    except Exception:
+        # continue; some SDK variants may not need explicit configure
+        pass
 
-        if GEMINI_API_KEY and genai_client:
-            # Try several possible SDK call patterns to support different genai versions
-            try:
-                # Pattern 1: genai.generate_text
-                if hasattr(genai_client, "generate_text"):
-                    model_name = os.environ.get("GEMINI_MODEL", "text-bison-001")
-                    resp = genai_client.generate_text(model=model_name, prompt=full_prompt)
-                    ai_response_text = getattr(resp, "text", None) or (
-                        resp.candidates[0].text if getattr(resp, "candidates", None) else None
-                    )
+    # Build grounded prompts
+    system_prompt = f"You are a helpful assistant with access to document context.\n- Tone: {tone}\n- Audience: {audience}\n- Task: {task}\n\nProvide clear, accurate answers based on the provided context. If the context doesn't contain the answer, acknowledge that and offer what you can."
 
-                # Pattern 2: genai.chat.create (chat API)
-                elif hasattr(genai_client, "chat") and hasattr(genai_client.chat, "create"):
-                    model_name = os.environ.get("GEMINI_MODEL", "chat-bison-001")
-                    resp = genai_client.chat.create(
-                        model=model_name,
-                        messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}],
-                    )
-                    # try common response shapes
-                    ai_response_text = getattr(resp, "output", None)
-                    if isinstance(ai_response_text, list) and ai_response_text:
-                        # join pieces
-                        ai_response_text = "\n".join(
-                            [getattr(item, "content", item) for item in ai_response_text]
-                        )
-                    else:
-                        ai_response_text = getattr(resp, "content", None) or ai_response_text
+    user_prompt = f"Context from documents:\n{context_text}\n\nUser question: {user_question}\n\nPlease answer the question based on the context above."
 
-                # Pattern 3: genai.generate
-                elif hasattr(genai_client, "generate"):
-                    resp = genai_client.generate(input=full_prompt)
-                    ai_response_text = getattr(resp, "output_text", None) or (
-                        resp.candidates[0].text if getattr(resp, "candidates", None) else None
-                    )
+    full_input = f"{system_prompt}\n\n{user_prompt}"
 
-            except Exception as gen_err:
-                # If Gemini call fails, raise to be handled below and possibly fallback
-                gen_err_msg = f"Gemini generation error: {gen_err}"
-                raise RuntimeError(gen_err_msg)
+    # Resolve a compatible model for the current key/API version
+    model_name, available_models = _resolve_gemini_model(gemini_mod)
 
-        # If Gemini didn't produce output, fall back to OpenAI if available
-        if not ai_response_text and OPENAI_API_KEY and client:
-            try:
-                response = client.chat.completions.create(
-                    model="gpt-3.5-turbo",
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    temperature=0.7,
-                    max_tokens=1024,
-                    top_p=0.9,
-                )
+    # Call Gemini model
+    ai_output = None
+    try:
+        # Official google-generativeai path
+        if hasattr(gemini_mod, "GenerativeModel"):
+            model = gemini_mod.GenerativeModel(model_name)
+            resp = model.generate_content(full_input)
+            ai_output = getattr(resp, "text", None)
+            if not ai_output and getattr(resp, "candidates", None):
+                parts = []
+                for cand in resp.candidates:
+                    content = getattr(cand, "content", None)
+                    cand_parts = getattr(content, "parts", None) if content else None
+                    if cand_parts:
+                        for part in cand_parts:
+                            part_text = getattr(part, "text", None)
+                            if part_text:
+                                parts.append(part_text)
+                if parts:
+                    ai_output = "\n".join(parts)
 
-                ai_response_text = response.choices[0].message.content if response.choices else None
-            except Exception as oe:
-                raise RuntimeError(f"OpenAI generation error: {oe}")
+        # Compatibility path used by some newer SDK variants
+        elif hasattr(gemini_mod, "generate"):
+            resp = gemini_mod.generate(model=model_name, input=full_input)
+            ai_output = getattr(resp, "output_text", None) or getattr(resp, "text", None)
+            if not ai_output and getattr(resp, "candidates", None):
+                ai_output = getattr(resp.candidates[0], "text", None)
 
-        if not ai_response_text:
-            ai_response_text = "No response generated."
+        # Legacy fallback: genai.chat.create
+        elif hasattr(gemini_mod, "chat") and hasattr(gemini_mod.chat, "create"):
+            resp = gemini_mod.chat.create(model=model_name, messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}])
+            ai_output = getattr(resp, "output", None) or getattr(resp, "content", None)
+            if isinstance(ai_output, list):
+                ai_output = "\n".join([getattr(x, "content", x) for x in ai_output])
 
-        return jsonify(
-            {
-                "response": ai_response_text,
-                "context_sources": [chunk["filename"] for chunk in context_chunks],
-                "chunks_retrieved": len(context_chunks),
-            }
-        )
+        else:
+            return jsonify({"error": "google.generativeai SDK does not expose a compatible generation method."}), 500
 
     except Exception as e:
-        return jsonify({"error": f"Error generating response: {str(e)}"}), 500
+        available_hint = ", ".join(available_models[:5]) if available_models else "none detected"
+        return jsonify({"error": f"Gemini generation failed: {e}. Selected model: {model_name}. Available generateContent models: {available_hint}"}), 500
+
+    if not ai_output:
+        ai_output = "No response generated."
+
+    return jsonify({"response": ai_output})
