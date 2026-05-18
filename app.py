@@ -3,6 +3,8 @@ import magic
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 
+from extractor import extract_text_from_file
+
 # MIME type mappings for validation (magic numbers)
 ALLOWED_MIMES = {
     "text/plain": {"txt"},
@@ -79,18 +81,19 @@ def upload_file():
         return redirect(request.url)
 
     file = request.files["document"]
+    original_filename = file.filename or ""
 
-    if file.filename == "":
+    if original_filename == "":
         flash("No selected file")
         return redirect(url_for("index"))
 
     # Step 1: Check extension
-    if not allowed_file(file.filename):
+    if not allowed_file(original_filename):
         flash("Invalid file type. Please upload .txt, .md, .pdf, .py, or .js files.")
         return redirect(url_for("index"))
     
     # Step 2: Validate file content (magic numbers)
-    is_valid, error_msg = validate_file_content(file, file.filename)
+    is_valid, error_msg = validate_file_content(file, original_filename)
     if not is_valid:
         flash(f"File validation failed: {error_msg}")
         return redirect(url_for("index"))
@@ -109,9 +112,15 @@ def upload_file():
         return redirect(url_for("index"))
     
     # Step 4: Save file with validation
-    filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-    flash(f"File {filename} successfully uploaded.")
+    filename = secure_filename(original_filename)
+    file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    file.save(file_path)
+
+    # Step 5: Extract text immediately after saving
+    extracted_text = extract_text_from_file(file_path)
+
+    # At this point you can persist, index, or analyze `extracted_text`.
+    flash(f"File {filename} successfully uploaded and extracted ({len(extracted_text)} characters).")
     return redirect(url_for("index"))
 
 

@@ -37,3 +37,13 @@
 - **Date**: 18-05-2026 14:19
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: My Flask application currently saves .pdf, .txt, .md, and .py files into a data folder. Write a new Python module called extractor.py. In it, create functions that take a file path as input and return the raw string text of the file. Use pdfplumber for the PDFs. How should I integrate this extraction step into my existing upload_file() route so it processes the text immediately after saving?
+
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 18-05-2026 14:19
+- **User**: redowan-ahmed.sameer@epita.fr
+- **Prompt**: My Flask application currently saves .pdf, .txt, .md, and .py files into a data folder. Write a new Python module called extractor.py. In it, create functions that take a file path as input and return the raw string text of the file. Use pdfplumber for the PDFs. How should I integrate this extraction step into my existing upload_file() route so it processes the text immediately after saving?
+- **CoPilot Mode**: Agent
+- **CoPilot Model**: GPT-5.4 mini
+- **Changes Made**: Added extractor.py with per-file text extraction helpers and a dispatcher, updated upload_file() to save the file then extract text immediately, added a pdfplumber dependency, normalized uploaded filenames for type safety, and installed pdfplumber into the active virtual environment.
+- **Context and Reasons for Changes**: The route now has a concrete extraction hook right after file persistence, which lets the app process or index the extracted text immediately instead of only storing the upload.
