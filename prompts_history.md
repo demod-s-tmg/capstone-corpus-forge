@@ -61,3 +61,6 @@
 ### 18-05-2026 15:49
 - **Prompt**: Model Status  Gemini Unavailable OpenAI Fallback Unavailable    Error: GEMINI_API_KEY not set or google.generativeai not installed.   Can you fix it and add the api key as a permanent key which i gave you, so it works?
 
+### 18-05-2026 15:53
+- **Prompt**: I am getting this issue "Error: google.generativeai SDK does not expose a compatible generation method."
+
