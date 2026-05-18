@@ -25,3 +25,6 @@
 ### 18-05-2026 14:36
 - **Prompt**: Can u add the plans we discussed in the docs folder properly?
 
+### 18-05-2026 14:49
+- **Prompt**: I have a working Flask app with an ingestion blueprint. I want to create a completely separate file named vector_store.py to handle ChromaDB storage. Write a class VectorStoreManager that initializes a persistent client in a local directory chroma_db. It should have a function add_document(filename, text) that splits text into chunks of 1000 characters with a 200-character overlap and adds them to a collection with the filename as metadata. It also needs a function query_context(active_files, query_text) that queries the collection but uses metadata filtering to only return results matching files in the active_files list .
+

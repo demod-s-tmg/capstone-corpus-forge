@@ -93,3 +93,9 @@
 - **CoPilot Model**: GPT-5.4 mini
 - **Changes Made**: Created docs/roadmap.md to record the current blueprint-based Flask structure and the planned ChromaDB and generative AI implementation path.
 - **Context and Reasons for Changes**: The docs folder was empty, so a single roadmap file gives the team a central place to track the app structure and future work without scattering notes.
+
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 18-05-2026 14:49
+- **User**: redowan-ahmed.sameer@epita.fr
+- **Prompt**: I have a working Flask app with an ingestion blueprint. I want to create a completely separate file named vector_store.py to handle ChromaDB storage. Write a class VectorStoreManager that initializes a persistent client in a local directory chroma_db. It should have a function add_document(filename, text) that splits text into chunks of 1000 characters with a 200-character overlap and adds them to a collection with the filename as metadata. It also needs a function query_context(active_files, query_text) that queries the collection but uses metadata filtering to only return results matching files in the active_files list .
