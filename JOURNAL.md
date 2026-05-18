@@ -25,6 +25,10 @@
 - **Date**: 18-05-2026 14:09
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: Test prompt to verify hook is working
+- **CoPilot Mode**: Agent
+- **CoPilot Model**: GPT-5.4 mini
+- **Changes Made**: Refactored the Flask app into blueprint-based routing modules, moving ingestion and file-management routes into routes/ingestion.py, reserving routes/chat.py for future chat and GenAI workflows, and updating the templates to use blueprint-qualified endpoints.
+- **Context and Reasons for Changes**: Splitting route domains into blueprints reduces merge conflicts, keeps ingestion and chat concerns isolated, and creates a cleaner seam for future ChromaDB and generative AI work.
 
 ### **New Interaction**
 - **Agent Version**: 2.3
@@ -60,7 +64,7 @@
 
 ### **New Interaction**
 - **Agent Version**: 2.3
-- **Date**: 18-05-2026 14:31
+- **Date**: 18-05-2026 14:29
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: Users also need to select which specific documents are active for their AI chat session. Suggest a UI approach (like checkboxes or a toggle switch in the HTML form) and the corresponding Flask backend logic to keep track of the user's 'active corpus' in their session state
 - **CoPilot Mode**: Agent
@@ -70,12 +74,18 @@
 
 ### **New Interaction**
 - **Agent Version**: 2.3
-- **Date**: 18-05-2026 14:28
+- **Date**: 18-05-2026 14:38
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: Users also need to select which specific documents are active for their AI chat session. Suggest a UI approach (like checkboxes or a toggle switch in the HTML form) and the corresponding Flask backend logic to keep track of the user's 'active corpus' in their session state
 
 ### **New Interaction**
 - **Agent Version**: 2.3
-- **Date**: 18-05-2026 14:29
+- **Date**: 18-05-2026 14:38
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: This application is about to grow. We need to add a vector database (ChromaDB) and Generative AI workflows. To keep the code clean and prevent merge conflicts within my team, how can I use Flask Blueprints to split my app.py into separate routing files (e.g., routes/ingestion.py, routes/chat.py)?
+
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 18-05-2026 14:36
+- **User**: redowan-ahmed.sameer@epita.fr
+- **Prompt**: Can u add the plans we discussed in the docs folder properly?
