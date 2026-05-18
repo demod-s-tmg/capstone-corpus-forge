@@ -31,3 +31,9 @@
 - **Date**: 18-05-2026 14:11
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: Review the upload_file() function in my Flask app. Are there any security vulnerabilities with how I am validating and saving the uploaded files? Specifically, how can I prevent a user from uploading a malicious file disguised with a .pdf extension, and how can I limit the maximum upload file size?
+
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 18-05-2026 14:19
+- **User**: redowan-ahmed.sameer@epita.fr
+- **Prompt**: My Flask application currently saves .pdf, .txt, .md, and .py files into a data folder. Write a new Python module called extractor.py. In it, create functions that take a file path as input and return the raw string text of the file. Use pdfplumber for the PDFs. How should I integrate this extraction step into my existing upload_file() route so it processes the text immediately after saving?
