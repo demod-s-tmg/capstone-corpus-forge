@@ -2,7 +2,12 @@
 
 import os
 
-from openai import OpenAI, APIError
+try:
+    from openai import OpenAI
+    from openai.error import APIError
+except Exception:
+    OpenAI = None  # type: ignore
+    APIError = Exception  # type: ignore
 from flask import Blueprint, jsonify, render_template, request, session
 
 from vector_store import VectorStoreManager
@@ -13,16 +18,22 @@ v_store = VectorStoreManager()
 
 # Configure the OpenAI client
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if OPENAI_API_KEY:
-    client = OpenAI(api_key=OPENAI_API_KEY)
+if OPENAI_API_KEY and OpenAI is not None:
+    try:
+        client = OpenAI(api_key=OPENAI_API_KEY)
+    except Exception:
+        client = None
 else:
     client = None
 
 
-@chat_bp.route("")
+@chat_bp.route("/")
 def chat():
     active_corpus = session.get("active_corpus", [])
-    return render_template("chat.html", active_corpus=active_corpus)
+    openai_available = bool(OPENAI_API_KEY and client)
+    return render_template(
+        "chat.html", active_corpus=active_corpus, openai_available=openai_available
+    )
 
 
 @chat_bp.route("/query", methods=["POST"])

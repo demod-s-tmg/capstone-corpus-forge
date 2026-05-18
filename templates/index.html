@@ -8,6 +8,12 @@
 
 <body>
     <h1>Corpus Forge - Ingestion & Management</h1>
+    <h1>Corpus Forge - Ingestion & Management</h1>
+
+    <nav style="margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border-radius: 4px;">
+        <a href="{{ url_for('ingestion.index') }}" style="margin-right: 15px; font-weight: bold; text-decoration: none; color: #333;">📁 Manage Corpus</a>
+        <a href="{{ url_for('chat.chat') }}" style="font-weight: bold; text-decoration: none; color: #007bff;">💬 Go to AI Workspace Chat</a>
+    </nav>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}
