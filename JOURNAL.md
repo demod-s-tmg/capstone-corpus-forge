@@ -53,3 +53,13 @@
 - **Date**: 18-05-2026 14:27
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: Review my index.html and app.py. I need to add a feature to allow users to delete files from the data folder. Please generate the Flask route (/delete/<filename>) to handle secure deletion, and update the HTML template to include a 'Delete' button next to each file in the list
+- **CoPilot Mode**: Agent
+- **CoPilot Model**: GPT-5.4 mini
+- **Changes Made**: Moved and hardened the /delete/<filename> Flask route so it registers before app startup, secured deletion to the data folder with path normalization and traversal checks, and updated the template button markup for each listed file.
+- **Context and Reasons for Changes**: The delete action needs to be available from the corpus list while remaining confined to files saved under the upload directory.
+
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 18-05-2026 14:28
+- **User**: redowan-ahmed.sameer@epita.fr
+- **Prompt**: Users also need to select which specific documents are active for their AI chat session. Suggest a UI approach (like checkboxes or a toggle switch in the HTML form) and the corresponding Flask backend logic to keep track of the user's 'active corpus' in their session state

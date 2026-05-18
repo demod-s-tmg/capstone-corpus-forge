@@ -16,3 +16,6 @@
 ### 18-05-2026 14:27
 - **Prompt**: Review my index.html and app.py. I need to add a feature to allow users to delete files from the data folder. Please generate the Flask route (/delete/<filename>) to handle secure deletion, and update the HTML template to include a 'Delete' button next to each file in the list
 
+### 18-05-2026 14:28
+- **Prompt**: Users also need to select which specific documents are active for their AI chat session. Suggest a UI approach (like checkboxes or a toggle switch in the HTML form) and the corresponding Flask backend logic to keep track of the user's 'active corpus' in their session state
+
