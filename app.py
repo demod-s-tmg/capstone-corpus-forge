@@ -1,6 +1,7 @@
 import os
 from flask import Flask
 from routes.ingestion import ingestion_bp
+from routes.chat import chat_bp
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key_for_corpus_forge"
@@ -14,6 +15,7 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 # Register blueprints
 app.register_blueprint(ingestion_bp)
+app.register_blueprint(chat_bp, url_prefix="/chat")
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

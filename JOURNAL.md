@@ -111,3 +111,9 @@
 - **Date**: 18-05-2026 14:55
 - **User**: redowan-ahmed.sameer@epita.fr
 - **Prompt**: Check my templates/chat.html. It should receive a list of active_corpus files from the backend. It needs dropdown menus for prompt steering (audience level, tone, task instructions) , a text input box for the user's question, and a chat log area that displays the conversation. Use plain JavaScript fetch() to send the form data to /chat/query asynchronously so the page doesn't refresh when the user asks a question
+
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 18-05-2026 15:19
+- **User**: redowan-ahmed.sameer@epita.fr
+- **Prompt**: checj why my chat feature not working
