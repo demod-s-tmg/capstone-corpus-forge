@@ -47,3 +47,9 @@
 - **CoPilot Model**: GPT-5.4 mini
 - **Changes Made**: Added extractor.py with per-file text extraction helpers and a dispatcher, updated upload_file() to save the file then extract text immediately, added a pdfplumber dependency, normalized uploaded filenames for type safety, and installed pdfplumber into the active virtual environment.
 - **Context and Reasons for Changes**: The route now has a concrete extraction hook right after file persistence, which lets the app process or index the extracted text immediately instead of only storing the upload.
+
+### **New Interaction**
+- **Agent Version**: 2.3
+- **Date**: 18-05-2026 14:27
+- **User**: redowan-ahmed.sameer@epita.fr
+- **Prompt**: Review my index.html and app.py. I need to add a feature to allow users to delete files from the data folder. Please generate the Flask route (/delete/<filename>) to handle secure deletion, and update the HTML template to include a 'Delete' button next to each file in the list

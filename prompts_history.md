@@ -13,3 +13,6 @@
 ### 18-05-2026 14:19
 - **Prompt**: My Flask application currently saves .pdf, .txt, .md, and .py files into a data folder. Write a new Python module called extractor.py. In it, create functions that take a file path as input and return the raw string text of the file. Use pdfplumber for the PDFs. How should I integrate this extraction step into my existing upload_file() route so it processes the text immediately after saving?
 
+### 18-05-2026 14:27
+- **Prompt**: Review my index.html and app.py. I need to add a feature to allow users to delete files from the data folder. Please generate the Flask route (/delete/<filename>) to handle secure deletion, and update the HTML template to include a 'Delete' button next to each file in the list
+
